@@ -5,40 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5fece73-d946-4265-b2aa-8d517f328c90" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/sentinel-app/.gitattributes" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/src/main/java/com/krish/sentinel_app/SentinelAppApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/src/main/resources/application.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/sentinel-app/src/test/java/com/krish/sentinel_app/SentinelAppApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/sentinel-app/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sentinel-app/src/main/java/com/krish/sentinelapp/Controller/VersionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sentinel-app/src/main/java/com/krish/sentinel_app/SentinelAppApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/sentinel-app/src/main/java/com/krish/sentinelapp/SentinelAppApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "krishjj8"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;krishjj8&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/krishjj8/Sentinel-Canary",
-    "accountId": "25ffbbfb-4ea5-4e01-99c9-54f36a48d289"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/krishjj8/Sentinel-Canary&quot;,
+    &quot;accountId&quot;: &quot;25ffbbfb-4ea5-4e01-99c9-54f36a48d289&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -52,11 +50,19 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "/home/krish/Documents/sentinel/sentinel-deploy/src/main/java/org/example/Main.java"
+    "last_opened_file_path": "/home/krish/Documents/sentinel/sentinel-deploy",
+    "onboarding.tips.debug.path": "/home/krish/Documents/sentinel/sentinel-deploy/src/main/java/org/example/Main.java",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sentinel-app" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -73,6 +79,11 @@
       <updated>1773404439783</updated>
     </task>
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/infra" />
+    </ignored-roots>
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
