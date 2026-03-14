@@ -88,6 +88,7 @@ resource "aws_instance" "sre_node" {
 resource "aws_ecr_repository" "sentinel_app" {
   name = "sentinel-app"
   image_tag_mutability = "MUTABLE"
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push = true
