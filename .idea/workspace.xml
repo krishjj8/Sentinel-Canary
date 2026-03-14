@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5fece73-d946-4265-b2aa-8d517f328c90" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/infra/.terraform.tfstate.lock.info" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/infra/main.tf" beforeDir="false" afterPath="$PROJECT_DIR$/infra/main.tf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -42,4 +42,4 @@ build/
 *.tfstate.backup
 .terraform.lock.hcl
 
-.env
+.env.idea/
