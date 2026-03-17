@@ -19,6 +19,8 @@ spec:
           image: 408834627625.dkr.ecr.ap-south-1.amazonaws.com/sentinel-app:v1
           ports:
             - containerPort: 8080
+
+          # Phase 4 Guardrails: Resource Management
           resources:
             requests:
               memory: "256Mi"
@@ -26,5 +28,23 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+
+          # Phase 4 Guardrails: Health Checks
+          # Liveness:
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 10
+
+          # Readiness:
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 25
+            periodSeconds: 5
+
       imagePullSecrets:
         - name: ecr-registry-key

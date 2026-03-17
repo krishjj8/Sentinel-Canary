@@ -1,4 +1,4 @@
-package  com.krish.sentinelapp.Controller;
+package  com.krish.sentinelapp.controller;
 
 
 import org.springframework.web.bind.annotation.GetMapping;

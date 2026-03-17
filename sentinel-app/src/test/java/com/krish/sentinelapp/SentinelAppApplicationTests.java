@@ -1,4 +1,4 @@
-package com.krish.sentinel_app;
+package com.krish.sentinelapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
