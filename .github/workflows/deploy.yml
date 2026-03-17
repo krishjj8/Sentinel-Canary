@@ -52,6 +52,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Forces K3s to pull the new image from ECR
+            cd ~/Sentinel-Canary
+            git pull origin main
+            sudo kubectl apply -f k8s/deployment.yaml
             sudo kubectl rollout restart deployment sentinel-app
-            sudo kubectl rollout status deployment sentinel-app# Force Update 2026-03-18

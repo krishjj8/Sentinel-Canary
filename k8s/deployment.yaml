@@ -17,6 +17,7 @@ spec:
       containers:
         - name: sentinel-container
           image: 408834627625.dkr.ecr.ap-south-1.amazonaws.com/sentinel-app:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
 
