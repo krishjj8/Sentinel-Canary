@@ -12,7 +12,7 @@ public class VersionController {
     @GetMapping("/version")
     public Map<String, String> version() {
         return Map.of(
-                "version","v2",
+                "version","v3",
                 "status","healthy"
 
         );
