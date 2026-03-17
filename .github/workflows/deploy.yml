@@ -19,9 +19,12 @@ jobs:
           cache: maven
 
       - name: Build with Maven
+        run: |
+            mvn clean package -DskipTests
+            echo "--- Verifying Target Folder ---"
+            ls -R target/  # This will show us EXACTLY where the .jar is
+          working-directory: ./sentinel-app
 
-        run: mvn clean package -DskipTests
-        working-directory: ./sentinel-app
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -36,14 +39,13 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: sentinel-app
-          IMAGE_TAG: v1
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY: sentinel-app
+            IMAGE_TAG: v1
         run: |
-          # 1. -f points to the Dockerfile inside the subfolder
-          # 2. sentinel-app/ at the end sets the "context" so Docker can see your code
-          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f sentinel-app/Dockerfile sentinel-app/
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            # Use --no-cache and ensure we are targeting the subfolder
+            docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f sentinel-app/Dockerfile sentinel-app/
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
