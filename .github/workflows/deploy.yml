@@ -54,4 +54,4 @@ jobs:
           script: |
             # Forces K3s to pull the new image from ECR
             sudo kubectl rollout restart deployment sentinel-app
-            sudo kubectl rollout status deployment sentinel-app
+            sudo kubectl rollout status deployment sentinel-app# Force Update 2026-03-18
