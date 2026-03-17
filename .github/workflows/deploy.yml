@@ -77,6 +77,12 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Clone repo if not exists
+            if [ ! -d ~/Sentinel-Canary ]; then
+              git clone https://github.com/krishjj8/Sentinel-Canary.git ~/Sentinel-Canary
+            fi
+
+            # Refresh ECR pull secret
             aws ecr get-login-password --region ap-south-1 \
               | sudo kubectl create secret docker-registry ecr-registry-key \
               --docker-server=408834627625.dkr.ecr.ap-south-1.amazonaws.com \
@@ -84,6 +90,7 @@ jobs:
               --docker-password=$(aws ecr get-login-password --region ap-south-1) \
               --dry-run=client -o yaml | sudo kubectl apply -f -
 
+            # Pull latest code and deploy
             cd ~/Sentinel-Canary
             git pull origin main
             sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
