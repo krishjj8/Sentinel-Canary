@@ -23,9 +23,10 @@ jobs:
 
       - name: Build with Maven
         run: |
-          mvn clean package -DskipTests
-          echo "--- Verifying JAR location ---"
-          ls -R sentinel-app/target/
+            mvn clean package -DskipTests
+            echo "--- Verifying JAR location ---"
+            
+            ls -R target/
         working-directory: ./sentinel-app
 
       - name: Configure AWS Credentials
@@ -45,8 +46,6 @@ jobs:
           ECR_REPOSITORY: sentinel-app
           IMAGE_TAG: v1
         run: |
-          # Since Dockerfile is at root, we use '.' as context
-          # And we point directly to the Dockerfile in the root
           docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
