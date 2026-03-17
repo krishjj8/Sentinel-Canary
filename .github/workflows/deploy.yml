@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -21,8 +24,8 @@ jobs:
       - name: Build with Maven
         run: |
           mvn clean package -DskipTests
-          echo "--- Verifying Target Folder ---"
-          ls -R target/
+          echo "--- Verifying JAR location ---"
+          ls -R sentinel-app/target/
         working-directory: ./sentinel-app
 
       - name: Configure AWS Credentials
@@ -42,7 +45,9 @@ jobs:
           ECR_REPOSITORY: sentinel-app
           IMAGE_TAG: v1
         run: |
-          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f sentinel-app/Dockerfile sentinel-app/
+          # Since Dockerfile is at root, we use '.' as context
+          # And we point directly to the Dockerfile in the root
+          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Deploy to K3s via SSH
