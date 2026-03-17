@@ -44,10 +44,11 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: sentinel-app
-          IMAGE_TAG: v1
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        working-directory: ./sentinel-app
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
