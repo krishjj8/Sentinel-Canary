@@ -42,22 +42,26 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: sentinel-app
-          IMAGE_TAG: ${{ github.sha }}
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY: sentinel-app
+            # Use the unique GitHub Run Number
+            IMAGE_TAG: ${{ github.run_number }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        working-directory: ./sentinel-app
+            docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            # Save the registry for the next step
+            echo "REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/Sentinel-Canary
-            git pull origin main
-            sudo kubectl apply -f k8s/deployment.yaml
-            sudo kubectl rollout restart deployment sentinel-app
+            host: ${{ secrets.SERVER_IP }}
+            username: ubuntu
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              cd ~/Sentinel-Canary
+              git pull origin main
+              
+              sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ github.run_number }}|" k8s/deployment.yaml
+              sudo kubectl apply -f k8s/deployment.yaml
+              sudo kubectl rollout status deployment sentinel-app
