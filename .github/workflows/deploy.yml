@@ -23,10 +23,8 @@ jobs:
 
       - name: Build with Maven
         run: |
-            mvn clean package -DskipTests
-            echo "--- Verifying JAR location ---"
-            
-            ls -R target/
+          mvn clean package -DskipTests
+          ls -R target/
         working-directory: ./sentinel-app
 
       - name: Configure AWS Credentials
@@ -42,26 +40,49 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            ECR_REPOSITORY: sentinel-app
-            # Use the unique GitHub Run Number
-            IMAGE_TAG: ${{ github.run_number }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: sentinel-app
+          IMAGE_TAG: ${{ github.run_number }}
         run: |
-            docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            # Save the registry for the next step
-            echo "REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
+          docker build --no-cache -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile sentinel-app/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Configure AWS CLI on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            if ! command -v aws &> /dev/null; then
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              sudo apt install unzip -y -q
+              unzip -q awscliv2.zip
+              sudo ./aws/install
+              rm -rf aws awscliv2.zip
+            fi
+            aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws configure set region ap-south-1
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
         with:
-            host: ${{ secrets.SERVER_IP }}
-            username: ubuntu
-            key: ${{ secrets.EC2_SSH_KEY }}
-            script: |
-              cd ~/Sentinel-Canary
-              git pull origin main
-              
-              sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ github.run_number }}|" k8s/deployment.yaml
-              sudo kubectl apply -f k8s/deployment.yaml
-              sudo kubectl rollout status deployment sentinel-app
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            aws ecr get-login-password --region ap-south-1 \
+              | sudo kubectl create secret docker-registry ecr-registry-key \
+              --docker-server=408834627625.dkr.ecr.ap-south-1.amazonaws.com \
+              --docker-username=AWS \
+              --docker-password=$(aws ecr get-login-password --region ap-south-1) \
+              --dry-run=client -o yaml | sudo kubectl apply -f -
+
+            cd ~/Sentinel-Canary
+            git pull origin main
+            sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
+            sudo kubectl apply -f k8s/deployment.yaml
+            sudo kubectl rollout status deployment sentinel-app --timeout=120s
