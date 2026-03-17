@@ -94,5 +94,5 @@ jobs:
             cd ~/Sentinel-Canary
             git pull origin main
             sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
-            sudo kubectl apply -f k8s/deployment.yaml
+            sudo kubectl apply -f k8s/
             sudo kubectl rollout status deployment sentinel-app --timeout=120s
