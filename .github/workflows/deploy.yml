@@ -52,6 +52,14 @@ jobs:
           echo "REGISTRY=$ECR_REGISTRY" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
+      - name: Scan Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry }}/sentinel-app:${{ github.run_number }}
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
+
       - name: Configure AWS CLI on server
         uses: appleboy/ssh-action@master
         with:
@@ -69,14 +77,13 @@ jobs:
             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws configure set region ap-south-1
-       
-      - name: Scan Image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/sentinel-app:${{ github.run_number }}
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+
+            
+            if ! command -v kubectl-argo-rollouts &> /dev/null; then
+              curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+              chmod +x ./kubectl-argo-rollouts-linux-amd64
+              sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+            fi
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
@@ -85,12 +92,10 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Clone repo if not exists
             if [ ! -d ~/Sentinel-Canary ]; then
               git clone https://github.com/krishjj8/Sentinel-Canary.git ~/Sentinel-Canary
             fi
 
-            # Refresh ECR pull secret
             aws ecr get-login-password --region ap-south-1 \
               | sudo kubectl create secret docker-registry ecr-registry-key \
               --docker-server=408834627625.dkr.ecr.ap-south-1.amazonaws.com \
@@ -98,9 +103,9 @@ jobs:
               --docker-password=$(aws ecr get-login-password --region ap-south-1) \
               --dry-run=client -o yaml | sudo kubectl apply -f -
 
-            # Pull latest code and deploy
             cd ~/Sentinel-Canary
             git pull origin main
-            sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/deployment.yaml
-            sudo kubectl apply -f k8s/
+            sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/rollout.yaml
+            sudo kubectl apply -f k8s/rollout.yaml
+            sudo kubectl apply -f k8s/service.yaml
             sudo kubectl argo rollouts status sentinel-app --timeout=120s
