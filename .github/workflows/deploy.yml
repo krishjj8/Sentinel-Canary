@@ -77,7 +77,12 @@ jobs:
             aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws configure set region ap-south-1
-
+            
+            if ! sudo kubectl get namespace argo-rollouts &> /dev/null; then
+              sudo kubectl create namespace argo-rollouts
+              sudo kubectl apply -n argo-rollouts \
+                -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+            fi
             
             if ! command -v kubectl-argo-rollouts &> /dev/null; then
               curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
