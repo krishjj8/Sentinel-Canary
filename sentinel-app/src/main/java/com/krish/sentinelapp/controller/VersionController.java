@@ -9,6 +9,10 @@ public class VersionController {
 
     @GetMapping("/version")
     public Map<String, String> version() {
-        throw new RuntimeException("broken - auto-rollback test");
+        return Map.of(
+            "version", "v5",
+            "color",   "green",
+            "status",  "healthy"
+        );
     }
 }
