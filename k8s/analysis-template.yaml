@@ -6,12 +6,10 @@ spec:
   metrics:
   - name: success-rate
     interval: 30s
-    successCondition: result[0] >= 0.95
+    count: 3
+    successCondition: result == "ok"
     failureLimit: 3
     provider:
-      prometheus:
-        address: http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090
-        query: |
-          sum(rate(http_requests_total{status=~"2.*"}[2m]))
-          /
-          sum(rate(http_requests_total[2m]))
+      web:
+        url: "http://sentinel-service.default.svc:8080/actuator/health"
+        jsonPath: "{$.status}"
