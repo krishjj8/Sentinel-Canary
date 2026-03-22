@@ -113,4 +113,5 @@ jobs:
             sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/rollout.yaml
             sudo kubectl apply -f k8s/rollout.yaml
             sudo kubectl apply -f k8s/service.yaml
+            sudo kubectl apply -f k8s/analysis-template.yaml
             sudo kubectl argo rollouts status sentinel-app --timeout=300s
