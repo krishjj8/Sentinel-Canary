@@ -7,9 +7,9 @@ spec:
   - name: success-rate
     interval: 30s
     count: 3
-    successCondition: result == "ok"
-    failureLimit: 3
+    successCondition: result == "healthy"
+    failureLimit: 2
     provider:
       web:
-        url: "http://sentinel-service.default.svc:8080/actuator/health"
+        url: "http://sentinel-service.default.svc:8080/version"
         jsonPath: "{$.status}"
