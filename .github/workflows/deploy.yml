@@ -89,6 +89,14 @@ jobs:
               chmod +x ./kubectl-argo-rollouts-linux-amd64
               sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
             fi
+      - name: Copy k8s manifests to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "k8s/*"
+          target: "~/k8s"
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
@@ -97,10 +105,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            if [ ! -d ~/Sentinel-Canary ]; then
-              git clone https://github.com/krishjj8/Sentinel-Canary.git ~/Sentinel-Canary
-            fi
-
             aws ecr get-login-password --region ap-south-1 \
               | sudo kubectl create secret docker-registry ecr-registry-key \
               --docker-server=408834627625.dkr.ecr.ap-south-1.amazonaws.com \
@@ -108,10 +112,8 @@ jobs:
               --docker-password=$(aws ecr get-login-password --region ap-south-1) \
               --dry-run=client -o yaml | sudo kubectl apply -f -
 
-            cd ~/Sentinel-Canary
-            git pull origin main
-            sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" k8s/rollout.yaml
-            sudo kubectl apply -f k8s/rollout.yaml
-            sudo kubectl apply -f k8s/service.yaml
-            sudo kubectl apply -f k8s/analysis-template.yaml
+            sed -i "s|image: .*sentinel-app:.*|image: ${{ env.REGISTRY }}/sentinel-app:${{ env.IMAGE_TAG }}|" ~/k8s/rollout.yaml
+            sudo kubectl apply -f ~/k8s/analysis-template.yaml
+            sudo kubectl apply -f ~/k8s/rollout.yaml
+            sudo kubectl apply -f ~/k8s/service.yaml
             sudo kubectl argo rollouts status sentinel-app --timeout=300s
