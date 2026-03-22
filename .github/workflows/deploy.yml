@@ -96,7 +96,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "k8s/*"
-          target: "~/k8s"
+          target: "~/"
 
       - name: Deploy to K3s via SSH
         uses: appleboy/ssh-action@master
